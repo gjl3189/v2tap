@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Principal;
 using System.Windows.Forms;
 
 namespace v2tap
@@ -28,6 +29,13 @@ namespace v2tap
         [STAThread]
         public static void Main(string[] args)
         {
+            if (!new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                MessageBox.Show("请右键选择 以管理员身份运行 ！", "权限错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Environment.Exit(1);
+            }
+
             foreach (string file in files)
             {
                 if (!File.Exists(file))
