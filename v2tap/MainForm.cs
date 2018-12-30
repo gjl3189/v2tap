@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
@@ -27,7 +28,6 @@ namespace v2tap
                 "1. 软件由 Holli_Freed 制作并开源与 GitHub 上\n" +
                 "\n" +
                 "GitHub：https://github.com/hacking001/v2tap\n" +
-                "GitLab：https://gitlab.com/hacking001/v2tap\n" +
                 "\n" +
                 "最终解释权归 Holli_Freed 所有！" +
                 "";
@@ -39,39 +39,65 @@ namespace v2tap
             v2rayUserIDTextBox.Text = Guid.NewGuid().ToString();
             v2rayTransferMethodComboBox.SelectedIndex = 2;
 
-            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (NetworkInterface adapter in adapters)
+            using (UdpClient client = new UdpClient("114.114.114.114", 53))
             {
-                IPInterfaceProperties properties = adapter.GetIPProperties();
+                IPAddress address = ((IPEndPoint)client.Client.LocalEndPoint).Address;
 
-                foreach (UnicastIPAddressInformation information in properties.UnicastAddresses)
+                int addressCount = 0;
+                int gatewayCount = 0;
+                bool addressGeted = false;
+
+                NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+                foreach (NetworkInterface adapter in adapters)
                 {
-                    if (information.Address.AddressFamily == AddressFamily.InterNetwork)
+                    IPInterfaceProperties properties = adapter.GetIPProperties();
+
+                    foreach (UnicastIPAddressInformation information in properties.UnicastAddresses)
                     {
-                        string IP = information.Address.ToString();
-                        
-                        if (IP.StartsWith("10.") || IP.StartsWith("172.") || IP.StartsWith("192."))
+                        if (information.Address.AddressFamily == AddressFamily.InterNetwork)
                         {
-                            AdapterAddressComboBox.Items.Add(IP);
+                            string IP = information.Address.ToString();
+
+                            if (IP.StartsWith("10.") || IP.StartsWith("172.") || IP.StartsWith("192."))
+                            {
+                                if (Equals(information.Address, address))
+                                {
+                                    addressGeted = true;
+                                }
+                                else
+                                {
+                                    if (!addressGeted)
+                                    {
+                                        addressCount++;
+                                    }
+                                }
+
+                                AdapterAddressComboBox.Items.Add(IP);
+                            }
+                        }
+                    }
+
+                    foreach (GatewayIPAddressInformation information in properties.GatewayAddresses)
+                    {
+                        if (information.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            string IP = information.Address.ToString();
+
+                            if (IP.StartsWith("10.") || IP.StartsWith("172.") || IP.StartsWith("192."))
+                            {
+                                if (!addressGeted)
+                                {
+                                    gatewayCount++;
+                                }
+
+                                AdapterGatewayComboBox.Items.Add(IP);
+                            }
                         }
                     }
                 }
-
-                foreach (GatewayIPAddressInformation information in properties.GatewayAddresses)
-                {
-                    if (information.Address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        string IP = information.Address.ToString();
-
-                        if (IP.StartsWith("10.") || IP.StartsWith("172.") || IP.StartsWith("192."))
-                        {
-                            AdapterGatewayComboBox.Items.Add(IP);
-                        }
-                    }
-                }
+                AdapterAddressComboBox.SelectedIndex = addressCount;
+                AdapterGatewayComboBox.SelectedIndex = gatewayCount;
             }
-            AdapterAddressComboBox.SelectedIndex = 0;
-            AdapterGatewayComboBox.SelectedIndex = 0;
 
             if (Process.GetProcessesByName("tun2socks").Length == 1 && Process.GetProcessesByName("wv2ray").Length == 1)
             {
