@@ -243,7 +243,7 @@ namespace v2tap
 
                         Thread.Sleep(1000);
                         status = "正在启动 tun2socks 服务 ...";
-                        Utils.SharedUtils.ExecuteCommand("RunHiddenConsole.exe tun2socks.exe -delayICMP 500 -tunGw " + TUNTAPGateway + " -tunAddr " + TUNTAPAddress + " -dnsServer " + TUNTAPDNS + " -proxyType socks -proxyServer 127.0.0.1:1099");
+                        Utils.SharedUtils.ExecuteCommand("RunHiddenConsole.exe tun2socks.exe -tun-gw " + TUNTAPGateway + " -tun-address " + TUNTAPAddress + " -tun-dns " + TUNTAPDNS + " -enable-dns-cache -public-only -local-socks-addr 127.0.0.1:1099");
 
                         Thread.Sleep(1000);
                         status = "正在配置 路由表 ...";
@@ -270,6 +270,15 @@ namespace v2tap
                             ControlButton.Text = "停止";
                         });
                         status = "启动完毕 ...";
+
+                        try
+                        {
+                            File.Delete("config.json");
+                        }
+                        catch
+                        {
+
+                        }
                     });
                 }
                 else

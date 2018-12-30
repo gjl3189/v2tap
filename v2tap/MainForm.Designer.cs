@@ -201,7 +201,6 @@
             this.v2rayServerPortTextBox.Name = "v2rayServerPortTextBox";
             this.v2rayServerPortTextBox.Size = new System.Drawing.Size(61, 23);
             this.v2rayServerPortTextBox.TabIndex = 7;
-            this.v2rayServerPortTextBox.Text = "443";
             this.v2rayServerPortTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.v2rayServerPortTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.v2rayServerPortTextBox_KeyPress);
             // 
@@ -249,7 +248,6 @@
             this.v2rayServerAddressTextBox.Name = "v2rayServerAddressTextBox";
             this.v2rayServerAddressTextBox.Size = new System.Drawing.Size(241, 23);
             this.v2rayServerAddressTextBox.TabIndex = 1;
-            this.v2rayServerAddressTextBox.Text = "hacking001.com";
             this.v2rayServerAddressTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // v2rayServerAddressLabel
